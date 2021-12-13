@@ -1,0 +1,44 @@
+//Configuracion de Router 2811, para servicio VoIP
+-------------------------------------------------------------------------------------------------------------------------------------
+
+//Como primer paso, debemos acceder a la interfaz que va conectado al router del piso 1
+debimos a que esa se utilizara como conecte de todo la configuracion para Subinterfaz y creacion del pool
+todo accediendo en modo conf term, y encenderla
+
+ena
+conf term
+int fa 0/0
+no shutdown
+
+//Como Segundo paso, tenemos que crear un DHCP Pool, que es un rango de direcciones que pueden ser dinamicas o estaticas la actividad
+solicita que trabajemos con VLAN 1, la cual se le asigno la direccion 192.168.20.0/24, entonces en base a la address debemos trabajar el pool//
+
+
+//para vlan 1
+ena
+conf term
+ip dhcp pool VOICE
+network 192.168.20.0 255.255.255.0
+default-router 192.168.20.1 //puerta de enlace
+option 150 ip 192.168.20.1
+
+//Como tercer paso, usaremos un enrutamiento que nos servira para dar acceso a los telefonos base a VLAN 1, conocido como router-on-a-stick
+que es la creacion de subinterfaces de red, basadas en las vlan para dar soporte entre la capa 2 y 3//
+
+ena
+conf term
+int fa0/0.1
+encapsulation dot1q 1
+ip address 192.168.20.1 255.255.255.0
+exit
+
+
+//Como cuarto paso, debemos crear el servicio de Voip dentro del router atraves de los comandos siguientes//
+
+ena
+conf term
+telephony-service // Tipo de Servicio
+max-dn 12 // numero de telefonos que tiene la topologia
+max-ephones 12 //numero maximo de telefonos
+ip source-address 192.168.20.1 port 2000 //direccion de donde se van a recibir los numero, establecidos en el gateway, bajo el puerto 2000(VoIP)
+auto assign 1 to 12 //Configuracion de los botones habilitados del telefono
