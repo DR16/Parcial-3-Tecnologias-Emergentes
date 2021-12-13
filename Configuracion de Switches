@@ -1,0 +1,34 @@
+int fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 1
+---------------------------------------------------------------------------------------
+
+//Switch Piso 4, en este caso vamos a trabajar bajo la Vlan 1 (nativa) la cual ya esta predeterminada
+en todas las interfaces del dispostivo, la cual no se debe cambiar su nombre//
+
+//Como primer paso debemos entrar a la configuracion global del dispositivo luego entrar a la Interfaces 
+donde hemos conectado los telefonos, en el modo acceso//
+
+ena
+conf term
+int range FastEthernet 0/22-24
+switchport mode access
+switchport voice vlan 1
+end
+
+//Como segundo paso debemos permitir la truncalizacion entre las interfaces que van de switch a Switch
+para que pase la Vlan 1, todo este accediendo a la interfaz, en modo de usuario global//
+
+ena
+conf term
+int fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 1
+---------------------------------------------------------------------------------------
+
+//Como uso de las buenas practicas de Administracion de Redes, debemos apagar las interfaces que no estamos usando
+
+ena
+conf term
+int range fa0/2-20
+shutdown
